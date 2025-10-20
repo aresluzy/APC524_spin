@@ -1,3 +1,4 @@
+
 def wolff_update(spins, J, T):
     beta = 1.0 / T
     L = spins.shape[0]
