@@ -1,8 +1,7 @@
 ## 3D XY Model Simulation
 
 ### Overview
-
-This project implements a 3D XY spin model on cubic lattices of various sizes ($L$ = 8 – 20) to study continuous U(1) symmetry breaking and critical phenomena.
+The project implements a 3D XY spin model on cubic lattices of various sizes ($L$ = 8 – 20) to study continuous U(1) symmetry breaking and critical phenomena.
 The model is simulated using two Monte Carlo update schemes:
 *	Metropolis algorithm — a local update method that becomes inefficient near $T_{\langle C\rangle}$.
 * 8 Wolff cluster algorithm — a non-local cluster update that mitigates critical slowing down.
