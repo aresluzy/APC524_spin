@@ -15,9 +15,9 @@ At low temperature the system exhibits spontaneous U(1) symmetry breaking; at $T
 
 ## Implementation Plan
 * Generate XY spin configurations on periodic 3D lattices.
-* Perform sweeps at multiple temperatures around T₍c₎.
+* Perform sweeps at multiple temperatures around $T_{\langle C\rangle}$.
 * Measure observables: magnetization, susceptibility, Binder cumulant, specific heat, and correlation length.
-* Apply finite-size scaling to extract T₍c₎ and critical exponents.
+* Apply finite-size scaling to extract $T_{\langle C\rangle}$ and critical exponents.
 * Compare algorithmic efficiency via autocorrelation time and average cluster size.
 
 ##  Expected Results
