@@ -1,4 +1,4 @@
-# 3D XY Model Simulation (Project README)
+# 3D XY Model Simulation
 
 ## Overview
 
