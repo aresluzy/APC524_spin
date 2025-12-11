@@ -17,6 +17,7 @@ dependencies = [
     "numpy",
     "scipy",
     "matplotlib",
+    "imageio"
 ]
 
 [dependency-groups]
