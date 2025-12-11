@@ -1,29 +1,11 @@
 from __future__ import annotations
-
+from collections import deque
 from dataclasses import dataclass
 from typing import Tuple
-
 import numpy as np
-
 from . import core
 
-
 @dataclass
-class WolffParameters:
-    """
-    Parameters controlling the Wolff cluster updates.
-
-    Attributes
-    ----------
-    J : float
-        Coupling constant.
-    T : float
-        Temperature.
-    """
-    J: float
-    T: float
-
-
 class XYLattice:
     """
     3D XY spin lattice with helper methods for initialization and copying.
@@ -37,47 +19,45 @@ class XYLattice:
             Linear system size.
         """
         self.L = L
-        self.spins = core.initialize_lattice(L)
+        self.spins = self.initialize_lattice(L)
 
-    def reset_random(self) -> None:
+    @staticmethod
+    def _initialize_lattice(L: int) -> np.ndarray:
         """
-        Reinitialize spins to a new random XY configuration.
-        """
-        self.spins = core.initialize_lattice(self.L)
+        Create a random XY spin configuration.
 
-    def copy(self) -> "XYLattice":
-        """
+        Each spin is (cosθ, sinθ) with θ ∈ [0, 2π).
+
+        Parameters
+        ----------
+        L : int
+        Linear system size.
+
         Returns
         -------
-        XYLattice
-            Deep copy of the lattice.
+        ndarray
+        Random spins with shape (L, L, L, 2)
         """
-        new_lat = XYLattice(self.L)
-        new_lat.spins = np.copy(self.spins)
-        return new_lat
+        theta = np.random.uniform(0, 2 * np.pi, (L, L, L))
+        spins = np.stack((np.cos(theta), np.sin(theta)), axis=-1)  # Shape: (L, L, L, 2)
+        return spins
 
 
 class WolffClusterUpdater:
     """
-    Object-oriented wrapper for Wolff cluster update functions.
+    Wolff cluster updates for the 3D XY model.
+
+    Parameters
+    ----------
+    J : float
+        Coupling constant.
+    T : float
+        Temperature.
     """
 
-    def __init__(self, params: WolffParameters):
-        """
-        Parameters
-        ----------
-        params : WolffParameters
-            Wolff algorithm parameters.
-        """
-        self.params = params
-
-    @property
-    def J(self) -> float:
-        return self.params.J
-
-    @property
-    def T(self) -> float:
-        return self.params.T
+    def __init__(self, J: float, T: float):
+        self.J = J
+        self.T = T
 
     def step(self, spins: np.ndarray) -> int:
         """
