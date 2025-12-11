@@ -116,11 +116,11 @@ class XYSimulation:
         updater = WolffClusterUpdater(J, T)
         # Equilibration
         for _ in range(n_equil):
-            updater.wolff_update_with_estimator(spins, J, T)
+            updater.wolff_update_with_estimator(spins)
 
         # Measurement
         for _ in range(n_steps):
-            cluster_size, cluster_Sq, q_vectors = updater.wolff_update_with_estimator(spins, J, T)
+            cluster_size, cluster_Sq, q_vectors = updater.wolff_update_with_estimator(spins)
             cluster_sizes.append(cluster_size / V)
 
             E = core.compute_energy(spins, J)
