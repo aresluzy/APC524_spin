@@ -3,7 +3,7 @@ requires = ["hatchling"]
 build-backend = "hatchling.build"
 
 [project]
-name = "APC524_spin"
+name = "xy3d_wolff"
 version = "0.1.0"
 description = "3D XY model Monte Carlo using Wolff cluster updates with improved estimators and finite-size scaling."
 authors = [
