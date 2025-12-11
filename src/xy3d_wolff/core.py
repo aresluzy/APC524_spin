@@ -937,38 +937,9 @@ def plot_spin_orientations(simulation_results, L, T):
 
     plt.show()
 
-# Sim 1
-# Parameters
-J = 1.0
-n_steps = 10000
-n_equil = 3000
-L_list = [6,8,10,12]
-
-T_list = np.linspace(1.5, 3.0, 20)  # Temperatures around expected T_c ~2.2
-print(T_list)
-# Run the simulations and store results
-simulation_results = simulate_all_data(L_list,T_list,J, n_steps, n_equil)
-plot_simulation_results(simulation_results, L_list, T_list)
-
-#Load Data
 import pickle
-with open('simulation_results.pkl', 'rb') as f:
-    simulation_results = pickle.load(f)
 
-L_list = [8, 10, 12, 14, 16, 18, 20]
-T_list = np.linspace(1.5, 3.0, 20)
 
-# Plot the results
-# Parameters
-J = 1.0
-n_steps = 5000
-n_equil = 1000
-L_list = [8,10,12,14,16,18,20]
-
-T_list = np.linspace(1.5, 3, 20)  # Temperatures around expected T_c ~2.2
-print(T_list)
-# Run the simulations and store results
-simulation_results2 = simulate_all_data(L_list,T_list,J, n_steps, n_equil)
 
 import imageio
 import os
@@ -1045,36 +1016,6 @@ def create_spin_orientation_gif(simulation_results, L, T_list, interval, output_
     os.rmdir(temp_dir)
 
     print(f"GIF saved as {output_file}")
-
-plot_spin_orientations(simulation_results2, 8,1.5)
-plot_spin_orientations(simulation_results2, 8,3)
-create_spin_orientation_gif(simulation_results2, 8, T_list,500, output_file="spin_orientations.gif")
-
-# Plot the results
-# Parameters
-J = 1.0
-n_steps = 5000
-n_equil = 1000
-L_list = [8,10,12,14,16,18,20]
-
-T_list = np.linspace(1.5, 3, 20)  # Temperatures around expected T_c ~2.2
-print(T_list)
-# Run the simulations and store results
-simulation_results2 = simulate_all_data(L_list,T_list,J, n_steps, n_equil)
-plot_simulation_results(simulation_results, L_list, T_list)
-
-# Parameters
-J = 1.0
-n_steps = 10000
-n_equil = 5000
-L_list = [16]
-
-T_list = np.linspace(2.18, 2.25, 10)  # Temperatures around expected T_c ~2.2
-print(T_list)
-# Run the simulations and store results
-simulation_results_with_estimator = improved_simulate_all_data(L_list,T_list,J, n_steps, n_equil)
-
-plot_simulation_results(simulation_results_with_estimator, L_list, T_list)
 
 
 # Fitting functions
