@@ -1,9 +1,9 @@
 from __future__ import annotations
 from collections import deque
 from dataclasses import dataclass
-from typing import Tuple
 import numpy as np
-from . import core
+import src.xy3d_wolff.core as core
+
 
 @dataclass
 class XYLattice:
@@ -16,13 +16,12 @@ class XYLattice:
         Parameters
         ----------
         L : int
-            Linear system size.
+        Linear system size.
         """
         self.L = L
         self.spins = self.initialize_lattice(L)
 
-    @staticmethod
-    def _initialize_lattice(L: int) -> np.ndarray:
+    def initialize_lattice(self, L: int) -> np.ndarray:
         """
         Create a random XY spin configuration.
 
@@ -59,7 +58,7 @@ class WolffClusterUpdater:
         self.J = J
         self.T = T
 
-    def step(self, spins: np.ndarray) -> int:
+    def wolff_update(self, spins: np.ndarray) -> int:
         """
         Perform one Wolff cluster update using the standard update.
 
@@ -73,9 +72,64 @@ class WolffClusterUpdater:
         int
             Size of the cluster that was flipped.
         """
-        return core.wolff_update(spins, self.J, self.T)
+        beta = 1.0 / self.T
+        L = spins.shape[0]
 
-    def step_new(self, spins: np.ndarray) -> int:
+        # Choose a random reflection axis
+        phi = np.random.uniform(0, 2 * np.pi)
+        r = np.array([np.cos(phi), np.sin(phi)])  # Unit vector in x-y plane
+
+        # Choose a random seed spin
+        i0, j0, k0 = np.random.randint(0, L, 3)
+        S_i0 = spins[i0, j0, k0]
+
+        # Reflect the seed spin
+        S_i0_new = S_i0 - 2 * np.dot(S_i0, r) * r
+        spins[i0, j0, k0] = S_i0_new
+
+        # Initialize cluster
+        cluster = set()
+        cluster.add((i0, j0, k0))
+
+        # Use a stack for depth-first search
+        stack = deque()
+        stack.append((i0, j0, k0))
+
+        # Keep track of flipped spins
+        flipped = np.zeros(spins.shape[:3], dtype=bool)
+        flipped[i0, j0, k0] = True
+
+        while stack:
+            i, j, k = stack.pop()
+            S_i = spins[i, j, k]
+
+            # Neighbor indices with periodic boundary conditions
+            neighbors = [
+                ((i + 1) % L, j, k),
+                ((i - 1) % L, j, k),
+                (i, (j + 1) % L, k),
+                (i, (j - 1) % L, k),
+                (i, j, (k + 1) % L),
+                (i, j, (k - 1) % L)
+            ]
+
+            for ni, nj, nk in neighbors:
+                if not flipped[ni, nj, nk]:
+                    S_j = spins[ni, nj, nk]
+                    delta = 2 * beta * self.J * np.dot(S_i, r) * np.dot(S_j, r)
+                    p_add = 1 - np.exp(min(0, delta))
+
+                    if np.random.rand() < p_add:
+                        # Reflect spin S_j
+                        S_j_new = S_j - 2 * np.dot(S_j, r) * r
+                        spins[ni, nj, nk] = S_j_new
+                        flipped[ni, nj, nk] = True
+                        cluster.add((ni, nj, nk))
+                        stack.append((ni, nj, nk))
+
+        return len(cluster)
+
+    def wolff_update_new(self, spins: np.ndarray) -> int:
         """
         Perform one Wolff update using wolff_update_new.
 
@@ -89,11 +143,65 @@ class WolffClusterUpdater:
         int
             Size of the updated cluster.
         """
-        return core.wolff_update_new(spins, self.J, self.T)
+        beta = 1.0 / self.T
+        L = spins.shape[0]
 
-    def step_with_estimator(
-        self, spins: np.ndarray
-    ) -> Tuple[int, np.ndarray, np.ndarray]:
+        # Choose a random reflection axis
+        phi = np.random.uniform(0, 2 * np.pi)
+        r = np.array([np.cos(phi), np.sin(phi)])  # Unit vector in x-y plane
+
+        # Choose a random seed spin
+        i0, j0, k0 = np.random.randint(0, L, 3)
+        S_i0 = spins[i0, j0, k0]
+
+        # Reflect the seed spin
+        S_i0_new = S_i0 - 2 * np.dot(S_i0, r) * r
+        spins[i0, j0, k0] = S_i0_new
+
+        # Initialize cluster
+        cluster = set()
+        cluster.add((i0, j0, k0))
+
+        # Use a stack for depth-first search
+        stack = deque()
+        stack.append((i0, j0, k0))
+
+        # Keep track of flipped spins
+        flipped = np.zeros(spins.shape[:3], dtype=bool)
+        flipped[i0, j0, k0] = True
+
+        while stack:
+            i, j, k = stack.pop()
+            S_i = spins[i, j, k]
+
+            # Neighbor indices with periodic boundary conditions
+            neighbors = [
+                ((i + 1) % L, j, k),
+                ((i - 1) % L, j, k),
+                (i, (j + 1) % L, k),
+                (i, (j - 1) % L, k),
+                (i, j, (k + 1) % L),
+                (i, j, (k - 1) % L)
+            ]
+
+            for ni, nj, nk in neighbors:
+                if not flipped[ni, nj, nk]:
+                    S_j = spins[ni, nj, nk]
+                    # Corrected delta with negative sign
+                    delta = -2 * beta * self.J * np.dot(S_i, r) * np.dot(S_j, r)
+                    p_add = 1 - np.exp(min(0, delta))
+
+                    if np.random.rand() < p_add:
+                        # Reflect spin S_j
+                        S_j_new = S_j - 2 * np.dot(S_j, r) * r
+                        spins[ni, nj, nk] = S_j_new
+                        flipped[ni, nj, nk] = True
+                        cluster.add((ni, nj, nk))
+                        stack.append((ni, nj, nk))
+
+        return len(cluster)
+
+    def wolff_update_with_estimator(self, spins: np.ndarray):
         """
         Perform one Wolff update and return improved-estimator data.
 
@@ -108,6 +216,61 @@ class WolffClusterUpdater:
             (cluster_size, cluster_Sq, q_vectors) as in
             wolff_update_with_estimator.
         """
-        return core.wolff_update_with_estimator(spins, self.J, self.T)
+        beta = 1.0 / self.T
+        L = spins.shape[0]
+
+        # Choose a random reflection axis (unit vector in x-y plane)
+        phi = np.random.uniform(0, 2 * np.pi)
+        r = np.array([np.cos(phi), np.sin(phi)])  # Reflection axis
+
+        # Choose a random seed spin
+        i0, j0, k0 = np.random.randint(0, L, 3)
+        S_i0 = spins[i0, j0, k0]
+
+        # Reflect the seed spin
+        S_i0_new = S_i0 - 2 * np.dot(S_i0, r) * r
+        spins[i0, j0, k0] = S_i0_new
+
+        # Initialize cluster
+        cluster = [(i0, j0, k0)]
+        flipped = np.zeros((L, L, L), dtype=bool)
+        flipped[i0, j0, k0] = True
+
+        # Store positions of spins in the cluster
+        cluster_positions = [(i0, j0, k0)]
+
+        # Cluster growth
+        while cluster:
+            i, j, k = cluster.pop()
+            S_i = spins[i, j, k]
+
+            # Neighbor indices with periodic boundary conditions
+            neighbors = [
+                ((i + 1) % L, j, k),
+                ((i - 1) % L, j, k),
+                (i, (j + 1) % L, k),
+                (i, (j - 1) % L, k),
+                (i, j, (k + 1) % L),
+                (i, j, (k - 1) % L)
+            ]
+
+            for ni, nj, nk in neighbors:
+                if not flipped[ni, nj, nk]:
+                    S_j = spins[ni, nj, nk]
+                    delta = 2 * beta * self.J * np.dot(S_i, r) * np.dot(S_j, r)
+                    p_add = 1 - np.exp(min(0, delta))
+
+                    if np.random.rand() < p_add:
+                        # Reflect spin S_j
+                        S_j_new = S_j - 2 * np.dot(S_j, r) * r
+                        spins[ni, nj, nk] = S_j_new
+                        flipped[ni, nj, nk] = True
+                        cluster.append((ni, nj, nk))
+                        cluster_positions.append((ni, nj, nk))
+        cluster_size = np.sum(flipped)
+
+        cluster_Sq, q_vectors = core.compute_improved_structure_factor(cluster_positions, L)
+
+        return cluster_size, cluster_Sq, q_vectors
 
 
