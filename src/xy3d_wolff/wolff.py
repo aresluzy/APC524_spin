@@ -1,11 +1,9 @@
 from __future__ import annotations
 from collections import deque
-from dataclasses import dataclass
 import numpy as np
 from src.xy3d_wolff import core
 
 
-@dataclass
 class XYLattice:
     """
     3D XY spin lattice with helper methods for initialization and copying.

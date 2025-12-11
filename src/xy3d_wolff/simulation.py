@@ -53,13 +53,14 @@ class XYSimulation:
         magnetizations = []
         cluster_sizes = []
 
+        updater = WolffClusterUpdater(J, T)
         # Equilibration
         for _ in range(n_equil):
-            WolffClusterUpdater.wolff_update(spins, J, T)
+            updater.wolff_update(spins)
 
         # Measurement
         for _ in range(n_steps):
-            cluster_size = WolffClusterUpdater.wolff_update(spins, J, T)
+            cluster_size = updater.wolff_update(spins)
             cluster_sizes.append(cluster_size / V)
 
             E = core.compute_energy(spins, J)
@@ -112,15 +113,14 @@ class XYSimulation:
         cluster_sizes = []
         m2_improved = []
 
+        updater = WolffClusterUpdater(J, T)
         # Equilibration
         for _ in range(n_equil):
-            WolffClusterUpdater.wolff_update_with_estimator(spins, J, T)
+            updater.wolff_update_with_estimator(spins, J, T)
 
         # Measurement
         for _ in range(n_steps):
-            cluster_size, cluster_Sq, q_vectors = WolffClusterUpdater.wolff_update_with_estimator(
-                spins, J, T
-            )
+            cluster_size, cluster_Sq, q_vectors = updater.wolff_update_with_estimator(spins, J, T)
             cluster_sizes.append(cluster_size / V)
 
             E = core.compute_energy(spins, J)
@@ -198,7 +198,6 @@ class XYStudy:
             Nested dictionary results[L][T].
         """
         all_data: Dict[int, Dict[float, Any]] = {}
-        print(self.T_list)
 
         for L in self.L_list:
             all_data[L] = {}

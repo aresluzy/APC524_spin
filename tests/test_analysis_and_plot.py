@@ -3,7 +3,7 @@ import pytest
 
 
 from src.xy3d_wolff.analysis import XYAnalysis
-from src.xy3d_wolff.plotting import XYPlotter
+from src.xy3d_wolff.plotter import XYPlotter
 from src.xy3d_wolff.simulation import SimulationConfig, XYStudy
 from src.xy3d_wolff.wolff import XYLattice
 
