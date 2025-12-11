@@ -1,13 +1,9 @@
 import numpy as np
-import sys
-from pathlib import Path
 
-sys.path.append(str(Path(__file__).resolve().parents[1] / "src"))
-
-from xy3d_wolff.simulation import SimulationConfig, XYStudy
-from xy3d_wolff.plotting import XYPlotter
-from xy3d_wolff.wolff import XYLattice
-from xy3d_wolff import core
+from src.xy3d_wolff.simulation import SimulationConfig, XYStudy
+from src.xy3d_wolff.plotting import XYPlotter
+from src.xy3d_wolff.wolff import XYLattice
+from src.xy3d_wolff import core
 
 
 def main():
@@ -15,8 +11,8 @@ def main():
     J = 1.0
     n_steps = 10_000
     n_equil = 3_000
-    L_list = [6, 8, 10, 12]
-    T_list = np.linspace(1.5, 3.0, 20)
+    L_list = [6, 8]
+    T_list = np.linspace(1.5, 3.0, 3)
 
     basic_config = SimulationConfig(
         J=J,
@@ -35,7 +31,7 @@ def main():
     n_steps2 = 10_000
     n_equil2 = 5_000
     L_list2 = [16]
-    T_list2 = np.linspace(2.18, 2.25, 10)
+    T_list2 = np.linspace(2.18, 2.25, 3)
 
     improved_config = SimulationConfig(
         J=J2,

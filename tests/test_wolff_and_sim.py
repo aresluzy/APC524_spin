@@ -1,11 +1,8 @@
 import numpy as np
-import sys
-from pathlib import Path
+import pytest
 
-sys.path.append(str(Path(__file__).resolve().parents[1] / "src"))
-
-from xy3d_wolff.wolff import WolffParameters, XYLattice, WolffClusterUpdater
-from xy3d_wolff.simulation import SimulationConfig, XYSimulation, XYStudy
+from src.xy3d_wolff.wolff import WolffParameters, XYLattice, WolffClusterUpdater
+from src.xy3d_wolff.simulation import SimulationConfig, XYSimulation, XYStudy
 
 
 def test_xylattice_init_and_reset():

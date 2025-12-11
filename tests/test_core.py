@@ -1,11 +1,8 @@
 # tests/test_core.py
 import numpy as np
 import pytest
-import sys
-from pathlib import Path
 
-sys.path.append(str(Path(__file__).resolve().parents[1] / "src"))
-from xy3d_wolff import core
+from src.xy3d_wolff import core
 
 
 def test_initialize_lattice_shape_and_norm():

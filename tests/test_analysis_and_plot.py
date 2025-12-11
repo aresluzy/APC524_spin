@@ -1,13 +1,11 @@
 import numpy as np
-import sys
-from pathlib import Path
+import pytest
 
-sys.path.append(str(Path(__file__).resolve().parents[1] / "src"))
 
-from xy3d_wolff.analysis import XYAnalysis
-from xy3d_wolff.plotting import XYPlotter
-from xy3d_wolff.simulation import SimulationConfig, XYStudy
-from xy3d_wolff.wolff import XYLattice
+from src.xy3d_wolff.analysis import XYAnalysis
+from src.xy3d_wolff.plotting import XYPlotter
+from src.xy3d_wolff.simulation import SimulationConfig, XYStudy
+from src.xy3d_wolff.wolff import XYLattice
 
 
 def test_xyanalysis_autocorr_and_structure_factor():
