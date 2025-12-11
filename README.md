@@ -24,3 +24,79 @@ At low temperature the system exhibits spontaneous U(1) symmetry breaking; at $T
 * Precise estimate of the critical temperature $T_{\langle C\rangle}$.
 * Scaling collapse plots and critical exponents consistent with 3D XY universality.
 * Demonstration that Wolff updates reduce critical slowing down relative to Metropolis.
+
+---
+
+### Basic Usage Example
+
+Below is a minimal working example showing how to:
+
+1. Create a lattice  
+2. Run XY simulations using the Wolff updater  
+3. Measure observables  
+4. Plot and fit observables  
+5. Animated visualization of spin orientations
+
+This assumes you installed the project via:
+
+```bash
+uv pip install -e .
+```
+Example: Run a Wolff-Based Simulation
+```bash
+from xy3d_wolff.simulation import XYSimulation
+from xy3d_wolff.wolff import XYLattice
+from xy3d_wolff.plotter import XYPlotter
+
+# --- Simulation parameters ---
+L = 8           # Lattice size
+T = 2.2         # Temperature
+J = 1.0         # Coupling
+n_steps = 2000  # Number of Monte Carlo sweeps
+
+# --- Initialize lattice ---
+lat = XYLattice(L)
+
+# --- Create simulation object ---
+sim = XYSimulation(lattice=lat, J=J, T=T, n_steps=n_steps)
+
+# --- Run simulation ---
+results = sim.run_wolff()
+
+print("Magnetization =", results["magnetization"])
+print("Susceptibility =", results["susceptibility"])
+print("Binder cumulant =", results["binder_cumulant"])
+print("Correlation length =", results["correlation_length"])
+```
+Example: Sweep Over Multiple Temperatures
+```bash
+from xy3d_wolff.simulation import XYStudy
+
+L_list = [8, 10, 12]
+T_list = [1.6, 1.8, 2.0, 2.2, 2.3]
+
+study = XYStudy(L_list=L_list, T_list=T_list, n_steps=1500)
+all_results = study.simulate_all()
+
+# Access results:
+xi_10_T22 = all_results[10][2.2]["correlation_length"]
+print("Correlation length for L=10, T=2.2:", xi_10_T22)
+```
+Directory structure reminder
+```bash
+xy3d_wolff/
+│
+├── src/xy3d_wolff/
+│   ├── core.py
+│   ├── wolff.py
+│   ├── simulation.py
+│   ├── plotter.py
+│   └── __init__.py
+│
+├── tests/
+├── examples/
+├── pyproject.toml
+└── README.md
+```
+
+
